@@ -45,7 +45,7 @@ if [ ! -f /etc/vsftpd/.config_lock ]; then
 fi
 
 # Get log file path
-export LOG_FILE=`grep xferlog_file /etc/vsftpd/vsftpd.conf|cut -d= -f2`
+export LOG_FILE=`grep vsftpd_log_file /etc/vsftpd/vsftpd.conf|cut -d= -f2`
 
 # stdout server info:
 if [ ! $LOG_STDOUT ]; then
