@@ -26,7 +26,10 @@ echo -e "${FTP_USER}\n${FTP_PASS}" > /etc/vsftpd/virtual_users.txt
 
 # Set passive mode parameters:
 if [ "$PASV_ADDRESS" = "**IPv4**" ]; then
-    export PASV_ADDRESS=$(/sbin/ip route|awk '/default/ { print $3 }')
+    #export PASV_ADDRESS=$(/sbin/ip route|awk '/default/ { print $3 }')
+    default_src=$(/sbin/ip route|grep default|grep -oP '(?<=src )\d+\.\d+\.\d+\.\d+')
+    default_via=$(/sbin/ip route|grep default|grep -oP '(?<=via )\d+\.\d+\.\d+\.\d+')
+    export PASV_ADDRESS=${default_src:-$default_via}
 fi
 
 if [ ! -f /etc/vsftpd/.config_lock ]; then
