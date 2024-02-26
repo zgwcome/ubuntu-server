@@ -18,11 +18,12 @@ else
 fi
 
 # Create home dir and update vsftpd user db:
-mkdir -p "/home/vsftpd/${FTP_USER}"
-chown -R ftp:ftp /home/vsftpd/
+mkdir -p "/srv/ftp/${FTP_USER}"
+chown -R ftp:ftp /srv/ftp/
 
 echo -e "${FTP_USER}\n${FTP_PASS}" > /etc/vsftpd/virtual_users.txt
 /usr/bin/db_load -T -t hash -f /etc/vsftpd/virtual_users.txt /etc/vsftpd/virtual_users.db
+chmod 400 /etc/vsftpd/virtual_users.*
 
 # Set passive mode parameters:
 if [ "$PASV_ADDRESS" = "**IPv4**" ]; then
@@ -33,43 +34,43 @@ if [ "$PASV_ADDRESS" = "**IPv4**" ]; then
 fi
 
 if [ ! -f /etc/vsftpd/.config_lock ]; then
-    echo "pasv_address=${PASV_ADDRESS}" >> /etc/vsftpd/vsftpd.conf
-    echo "pasv_max_port=${PASV_MAX_PORT}" >> /etc/vsftpd/vsftpd.conf
-    echo "pasv_min_port=${PASV_MIN_PORT}" >> /etc/vsftpd/vsftpd.conf
-    echo "pasv_addr_resolve=${PASV_ADDR_RESOLVE}" >> /etc/vsftpd/vsftpd.conf
-    echo "pasv_enable=${PASV_ENABLE}" >> /etc/vsftpd/vsftpd.conf
-    echo "file_open_mode=${FILE_OPEN_MODE}" >> /etc/vsftpd/vsftpd.conf
-    echo "local_umask=${LOCAL_UMASK}" >> /etc/vsftpd/vsftpd.conf
-    echo "xferlog_std_format=${XFERLOG_STD_FORMAT}" >> /etc/vsftpd/vsftpd.conf
-    echo "reverse_lookup_enable=${REVERSE_LOOKUP_ENABLE}" >> /etc/vsftpd/vsftpd.conf
-    echo "pasv_promiscuous=${PASV_PROMISCUOUS}" >> /etc/vsftpd/vsftpd.conf
-    echo "port_promiscuous=${PORT_PROMISCUOUS}" >> /etc/vsftpd/vsftpd.conf
+    echo "pasv_address=${PASV_ADDRESS}" >> /etc/vsftpd.conf
+    echo "pasv_max_port=${PASV_MAX_PORT}" >> /etc/vsftpd.conf
+    echo "pasv_min_port=${PASV_MIN_PORT}" >> /etc/vsftpd.conf
+    echo "pasv_addr_resolve=${PASV_ADDR_RESOLVE}" >> /etc/vsftpd.conf
+    echo "pasv_enable=${PASV_ENABLE}" >> /etc/vsftpd.conf
+    echo "file_open_mode=${FILE_OPEN_MODE}" >> /etc/vsftpd.conf
+    echo "local_umask=${LOCAL_UMASK}" >> /etc/vsftpd.conf
+    echo "xferlog_std_format=${XFERLOG_STD_FORMAT}" >> /etc/vsftpd.conf
+    echo "pasv_promiscuous=${PASV_PROMISCUOUS}" >> /etc/vsftpd.conf
+    echo "port_promiscuous=${PORT_PROMISCUOUS}" >> /etc/vsftpd.conf
     touch /etc/vsftpd/.config_lock
 fi
 
 # Get log file path
-export LOG_FILE=`grep vsftpd_log_file /etc/vsftpd/vsftpd.conf|cut -d= -f2`
+export LOG_FILE=`grep vsftpd_log_file /etc/vsftpd.conf|cut -d= -f2`
 
 # stdout server info:
 if [ ! $LOG_STDOUT ]; then
 cat << EOB
-	*************************************************
-	*                                               *
-	*    Docker image: fauria/vsftpd                *
-	*    https://github.com/fauria/docker-vsftpd    *
-	*                                               *
-	*************************************************
+        **************************************************
+        *                                                *
+        *    Docker image: simfishing/vsftpd             *
+        *    https://github.com/simfishing/docker-vsftpd *
+        *                                                *
+        **************************************************
 
-	SERVER SETTINGS
-	---------------
-	· FTP User: $FTP_USER
-	· FTP Password: $FTP_PASS
-	· Log file: $LOG_FILE
-	· Redirect vsftpd log to STDOUT: No.
+        SERVER SETTINGS
+        ---------------
+        · FTP User: $FTP_USER
+        · FTP Password: $FTP_PASS
+        · Passive address: ${PASV_ADDRESS}
+        · Log file: $LOG_FILE
+        · Redirect vsftpd log to STDOUT: No.
 EOB
 else
     /usr/bin/ln -sf /dev/stdout $LOG_FILE
 fi
 
 # Run vsftpd:
-&>/dev/null /usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf
+&>/dev/null /usr/sbin/vsftpd /etc/vsftpd.conf
