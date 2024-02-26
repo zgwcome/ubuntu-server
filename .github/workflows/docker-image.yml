@@ -1,7 +1,7 @@
 name: Docker Image CI
 
 on:
-  # No changes
+  workflow_dispatch:
 
 jobs:
   deploy:
