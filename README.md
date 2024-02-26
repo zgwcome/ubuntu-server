@@ -8,18 +8,18 @@
 
 This Docker container implements a vsftpd server, with the following features:
 
- * Centos 7 base image.
- * vsftpd 3.0
+ * Ubuntu 22.04 base image.
+ * vsftpd 3.0.5
  * Virtual users
  * Passive mode
  * Logging to a file or STDOUT.
 
-### Installation from [Docker registry hub](https://registry.hub.docker.com/r/fauria/vsftpd/).
+### Installation from [Docker registry hub](https://registry.hub.docker.com/r/simfishing/vsftpd/).
 
 You can download the image with the following command:
 
 ```bash
-docker pull fauria/vsftpd
+docker pull simfishing/vsftpd
 ```
 
 Environment variables
@@ -127,9 +127,9 @@ This image uses environment variables to allow the configuration of some paramet
 Exposed ports and volumes
 ----
 
-The image exposes ports `20` and `21`. Also, exports two volumes: `/home/vsftpd`, which contains users home directories, and `/var/log/vsftpd`, used to store logs.
+The image exposes ports `20` and `21`. Also, exports two volumes: `/srv/ftp`, which contains users home directories, and `/var/log/vsftpd`, used to store logs.
 
-When sharing a homes directory between the host and the container (`/home/vsftpd`) the owner user id and group id should be 14 and 50 respectively. This corresponds to ftp user and ftp group on the container, but may match something else on the host.
+When sharing a homes directory between the host and the container (`/srv/ftp`) the owner user id and group id should be 14 and 50 respectively. This corresponds to ftp user and ftp group on the container, but may match something else on the host.
 
 Use cases
 ----
@@ -137,13 +137,13 @@ Use cases
 1) Create a temporary container for testing purposes:
 
 ```bash
-  docker run --rm fauria/vsftpd
+  docker run --rm simfishing/vsftpd
 ```
 
 2) Create a container in active mode using the default user account, with a binded data directory:
 
 ```bash
-docker run -d -p 21:21 -v /my/data/directory:/home/vsftpd --name vsftpd fauria/vsftpd
+docker run -d -p 21:21 -v /my/data/directory:/srv/ftp --name vsftpd simfishing/vsftpd
 # see logs for credentials:
 docker logs vsftpd
 ```
@@ -151,17 +151,17 @@ docker logs vsftpd
 3) Create a **production container** with a custom user account, binding a data directory and enabling both active and passive mode:
 
 ```bash
-docker run -d -v /my/data/directory:/home/vsftpd \
+docker run -d -v /my/data/directory:/srv/ftp \
 -p 20:20 -p 21:21 -p 21100-21110:21100-21110 \
 -e FTP_USER=myuser -e FTP_PASS=mypass \
 -e PASV_ADDRESS=127.0.0.1 -e PASV_MIN_PORT=21100 -e PASV_MAX_PORT=21110 \
---name vsftpd --restart=always fauria/vsftpd
+--name vsftpd --restart=always simfishing/vsftpd
 ```
 
 4) Manually add a new FTP user to an existing container:
 ```bash
 docker exec -i -t vsftpd bash
-mkdir /home/vsftpd/myuser
+mkdir /srv/ftp/myuser
 echo -e "myuser\nmypass" >> /etc/vsftpd/virtual_users.txt
 /usr/bin/db_load -T -t hash -f /etc/vsftpd/virtual_users.txt /etc/vsftpd/virtual_users.db
 exit
