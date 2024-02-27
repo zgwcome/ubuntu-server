@@ -16,7 +16,8 @@ RUN true \
     && apt-get -y install \
     db-util \
     vsftpd \
-    iproute2
+    iproute2 \
+    curl
 
 ENV FTP_USER **String**
 ENV FTP_PASS **Random**
