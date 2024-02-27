@@ -37,6 +37,7 @@ COPY vsftpd.conf /etc/
 COPY run-vsftpd.sh /usr/sbin/
 
 RUN true \
+		&& mkdir -p /etc/vsftpd \
         && mkdir -p /var/run/vsftpd/empty \
         && chmod +x /usr/sbin/run-vsftpd.sh
 
