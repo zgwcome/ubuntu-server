@@ -3,21 +3,24 @@ FROM ubuntu:22.04
 ARG USER_ID=14
 ARG GROUP_ID=50
 
-MAINTAINER Sim Fishing <sim.fishing@gmail.com>
-LABEL Description="vsftpd Docker image based on Ubuntu 22.04. Supports passive mode and virtual users. Based on fauria/vsftpd image." \
-	License="Apache License 2.0" \
-	Usage="docker run -d -p [HOST PORT NUMBER]:21 -v [HOST FTP HOME]:/srv/ftp simfishing/vsftpd" \
-	Version="1.0"
+LABEL Description="My private Ubuntu 22.04 server." 
 
 RUN true \
     && apt-get -y update 
 
 RUN true \
     && apt-get -y install \
+    cmake \
+    g++ \
+    make \
     db-util \
     vsftpd \
     iproute2 \
-    curl
+    curl \
+    rclone \
+    cron \
+    systemctl \
+    libcrypto++-dev zlib1g-dev
 
 ENV FTP_USER **String**
 ENV FTP_PASS **Random**
@@ -33,18 +36,24 @@ ENV LOCAL_UMASK 077
 ENV PASV_PROMISCUOUS NO
 ENV PORT_PROMISCUOUS NO
 
-COPY vsftpd_virtual /etc/pam.d/
-COPY vsftpd.conf /etc/
-COPY run-vsftpd.sh /usr/sbin/
+COPY vsftpd/vsftpd_virtual /etc/pam.d/
+COPY vsftpd/vsftpd.conf /etc/
+COPY im/libImSDK.so /usr/lib
+COPY im/client /usr/sbin
+COPY im/im.service /usr/lib
+COPY run-server.sh /usr/sbin/
+COPY copyphotos/exiftool /usr/sbin/
+COPY copyphotos/lib /usr/sbin
 
 RUN true \
-		&& mkdir -p /etc/vsftpd \
-        && mkdir -p /var/run/vsftpd/empty \
-        && chmod +x /usr/sbin/run-vsftpd.sh
+    && mkdir -p /etc/vsftpd \
+    && mkdir -p /var/run/vsftpd/empty \
+    && chmod +x /usr/sbin/run-server.sh
 
-VOLUME /srv/ftp
-VOLUME /var/log/vsftpd
+VOLUME /ftp
+VOLUME /photos
+# VOLUME /var/log/vsftpd
 
-EXPOSE 4220 4221
+EXPOSE 6020 6021 8080 21100 21101 21102 21103 21104 21105 21106 21107 21108 21109 21110
 
-CMD ["/usr/sbin/run-vsftpd.sh"]
+CMD ["/usr/sbin/run-server.sh"]
