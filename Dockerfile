@@ -49,7 +49,7 @@ COPY copyphotos/lib /usr/sbin/lib
 
 COPY copyphotos copyphotos
 RUN cd copyphotos && mkdir build && cd build && cmake .. && make
-COPY copyphotos/build/copyphotos  /usr/sbin
+# COPY copyphotos/build/copyphotos  /usr/sbin
 COPY copyphotos/copyphotos.service /usr/lib/systemd/system/
 
 RUN true \
