@@ -36,14 +36,21 @@ ENV LOCAL_UMASK 077
 ENV PASV_PROMISCUOUS NO
 ENV PORT_PROMISCUOUS NO
 
+WORKDIR /app
+
 COPY vsftpd/vsftpd_virtual /etc/pam.d/
 COPY vsftpd/vsftpd.conf /etc/
-COPY im/libImSDK.so /usr/lib
-COPY im/client /usr/sbin
-COPY im/im.service /usr/lib
+COPY im/libImSDK.so /usr/lib/
+COPY im/client /usr/sbin/
+COPY im/im.service /usr/lib/systemd/system/
 COPY run-server.sh /usr/sbin/
 COPY copyphotos/exiftool /usr/sbin/
-COPY copyphotos/lib /usr/sbin
+COPY copyphotos/lib /usr/sbin/lib
+
+COPY copyphotos copyphotos
+RUN cd copyphotos && mkdir build && cd build && cmake .. && make
+COPY copyphotos/build/copyphotos  /usr/sbin
+COPY copyphotos/copyphotos.service /usr/lib/systemd/system/
 
 RUN true \
     && mkdir -p /etc/vsftpd \
@@ -51,7 +58,8 @@ RUN true \
     && chmod +x /usr/sbin/run-server.sh
 
 VOLUME /ftp
-VOLUME /photos
+VOLUME /data
+VOLUME /config
 # VOLUME /var/log/vsftpd
 
 EXPOSE 6020 6021 8080 21100 21101 21102 21103 21104 21105 21106 21107 21108 21109 21110

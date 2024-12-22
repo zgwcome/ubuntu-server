@@ -3,14 +3,22 @@
 #include <stdio.h>
 #include <iostream>
 #include <filesystem>
+#include <algorithm>
+#include <cctype>
 #include <mutex>
 #include <condition_variable>
 #include <deque>
 
-const std::string DEST_DIR = "/photos/";
+const std::string DEST_DIR_JGP = "/data/Photos/R62/";
+const std::string DEST_DIR_CR3 = "/data/ARW/R62/";
+const std::string DEST_DIR_MP4 = "/data/MP4/R62/";
 std::mutex mtx;
 std::condition_variable cv;
 std::deque<std::string> photoDeque;
+
+extern std::mutex mtx2Cloud;
+extern std::condition_variable cv2Cloud;
+extern std::deque<std::pair<std::string, std::string>> photoDeque2Cloud;
 
 std::string ExecCmd(const std::string& cmd)
 {
@@ -35,7 +43,7 @@ std::string GetPhotoCreateTime(const std::string& path)
 
     std::string time;
     auto index = result.find("Create Date");
-    if(index != std::string::npos){
+    if(index != std::string::npos) {
         time =  result.substr(result.find(":", index) + 2, 10);
         time = time.substr(0, 4) + time.substr(5, 2) + time.substr(8, 2);
     }
@@ -55,8 +63,20 @@ bool CopyPhoto(const std::string& path) {
         std::cout << "ERROR: source file " << path << " doesn't exist" << std::endl;
         return false;
     }
+    
+    std::string ext = std::filesystem::path(path).extension().generic_string();
+    std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return std::tolower(c); });
 
-    const std::string destDir = DEST_DIR + createTime;
+    std::string destDir;
+    if(ext == ".jpg"){
+        destDir = DEST_DIR_JGP;
+    }else if(ext == ".cr3"){
+        destDir = DEST_DIR_CR3;
+    }else if(ext == ".mp4"){
+        destDir = DEST_DIR_MP4;
+    }
+    destDir += createTime;
+
     if(!std::filesystem::exists(destDir)) {
         if(!std::filesystem::create_directories(destDir)) {
             std::cout << "ERROR: create path " << destDir << " fail" << std::endl;
@@ -64,11 +84,14 @@ bool CopyPhoto(const std::string& path) {
         }
     }
 
-    const std::string dest = DEST_DIR + createTime + "/" + std::filesystem::path(path).filename().generic_string();
+    const std::string dest = destDir + "/" + std::filesystem::path(path).filename().generic_string();
     if(std::filesystem::copy_file(path, dest)) {
-        std::filesystem::remove(path);
+        std::cout << "Success move " << path << " to " << dest << std::endl; 
+        std::unique_lock lock(mtx2Cloud);
+        photoDeque2Cloud.push_front(std::make_pair(path, dest));
+        cv2Cloud.notify_one();
     }
-    std::cout << "Success move " << path << " to " << dest << std::endl; 
+
     return true;
 }
 
