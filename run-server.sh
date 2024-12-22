@@ -69,5 +69,6 @@ fi
 systemctl start cron.service
 systemctl start im.service
 systemctl start vsftpd.service
+systemctl start copyphotos.service
 crontab /config/crontab_config.txt
 &>/dev/null /bin/bash
