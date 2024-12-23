@@ -48,7 +48,7 @@ COPY copyphotos/exiftool /usr/sbin/
 COPY copyphotos/lib /usr/sbin/lib
 
 COPY copyphotos copyphotos
-RUN cd copyphotos && mkdir build && cd build && cmake .. && make
+RUN cd copyphotos && mkdir build && cd build && cmake .. && make && cp copyphotos /usr/sbin
 # COPY copyphotos/build/copyphotos  /usr/sbin
 COPY copyphotos/copyphotos.service /usr/lib/systemd/system/
 
