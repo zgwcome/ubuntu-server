@@ -15,7 +15,8 @@ std::mutex mtx2Cloud;
 std::condition_variable cv2Cloud;
 std::deque<std::pair<std::string, std::string>> photoDeque2Cloud;
 
-bool CopyToCloud(){
+bool CopyToCloud()
+{
     while(true) {
         std::pair<std::string, std::string> path;
         {

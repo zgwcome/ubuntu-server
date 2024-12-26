@@ -46,6 +46,8 @@ std::string GetPhotoCreateTime(const std::string& path)
     if(index != std::string::npos) {
         time =  result.substr(result.find(":", index) + 2, 10);
         time = time.substr(0, 4) + time.substr(5, 2) + time.substr(8, 2);
+    }else{
+        time = "Unknow";
     }
     
     return time;
