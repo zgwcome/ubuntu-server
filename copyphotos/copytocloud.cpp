@@ -31,10 +31,10 @@ bool CopyToCloud()
             path.first +" netdisk:T6/backup" + std::filesystem::path(path.second.substr(5)).parent_path().generic_string();
         std::string result = ExecCmd(cmd);
         if(result.find("Error") == std::string::npos) {
-            std::cout << "Upload " << path.first << " to cloud success!";
+            std::cout << "Upload " << path.first << " to cloud success!" << std::endl;
             std::filesystem::remove(path.first);
         }else{
-            std::cout << "Upload " << path.first << " to cloud fail!";
+            std::cout << "Upload " << path.first << " to cloud fail!" << std::endl;
         }
     }
 }

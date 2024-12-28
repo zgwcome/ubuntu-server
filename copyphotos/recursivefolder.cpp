@@ -15,6 +15,7 @@ void Recursive()
     for (const auto& entry : std::filesystem::recursive_directory_iterator(watch_dir)) {
         const auto& path = entry.path();
         if (std::filesystem::is_regular_file(path)) {
+            std::cout << "Find " << path.generic_string() << " in " << watch_dir << std::endl;
             std::unique_lock lock(mtx);
             photoDeque.push_front(path.generic_string());
             cv.notify_one();
