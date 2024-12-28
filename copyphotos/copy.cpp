@@ -54,6 +54,7 @@ std::string GetPhotoCreateTime(const std::string& path)
 }
 
 bool CopyPhoto(const std::string& path) {
+    std::cout << "Start to copy " << path << std::endl;
     if(!std::filesystem::exists(path)) {
         std::cout << "ERROR: source file " << path << " doesn't exist" << std::endl;
         return false;
@@ -72,6 +73,7 @@ bool CopyPhoto(const std::string& path) {
     }else if(ext == ".mp4") {
         destDir = DEST_DIR_MP4;
     }else {
+        std::cout << "ERROR: unsupport file format" << std::endl;
         return false;
     }
     destDir += createTime;
@@ -87,10 +89,12 @@ bool CopyPhoto(const std::string& path) {
     const auto copyOptions = std::filesystem::copy_options::update_existing;
     try {
         if (std::filesystem::copy_file(path, dest, copyOptions)) {
-            std::cout << "Success move " << path << " to " << dest << std::endl; 
+            std::cout << "Success copy " << path << " to " << dest << std::endl; 
             std::unique_lock lock(mtx2Cloud);
             photoDeque2Cloud.push_front(std::make_pair(path, dest));
             cv2Cloud.notify_one();
+        } else {
+            std::cout << "Failed copy " << path << " to " << dest << std::endl; 
         }
     }catch (const std::filesystem::filesystem_error& e){
         std::cout << "Copy file " << path << " fail " << e.what() << std::endl;
