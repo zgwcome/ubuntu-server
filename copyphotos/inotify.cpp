@@ -8,11 +8,10 @@ using namespace std;
 extern std::mutex mtx;
 extern std::condition_variable cv;
 extern std::deque<std::string> photoDeque;
+extern const std::string watch_dir;
 
 void Watch()
 {
-    const string watch_dir = "/ftp";
-
     try {
         Inotify notify;
 

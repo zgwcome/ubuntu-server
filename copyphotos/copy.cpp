@@ -65,12 +65,14 @@ bool CopyPhoto(const std::string& path) {
     std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return std::tolower(c); });
 
     std::string destDir;
-    if(ext == ".jpg"){
+    if(ext == ".jpg") {
         destDir = DEST_DIR_JGP;
-    }else if(ext == ".cr3"){
+    }else if(ext == ".cr3") {
         destDir = DEST_DIR_CR3;
-    }else if(ext == ".mp4"){
+    }else if(ext == ".mp4") {
         destDir = DEST_DIR_MP4;
+    }else {
+        return false;
     }
     destDir += createTime;
 
