@@ -32,6 +32,7 @@ RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
 
 WORKDIR /app
 
+COPY run-server.sh /usr/sbin/
 COPY copyphotos/exiftool /usr/sbin/
 COPY copyphotos/lib /usr/sbin/lib
 
@@ -39,6 +40,7 @@ RUN true \
     && chmod +x /usr/sbin/run-server.sh \
     && ln -s /usr/bin/python3.12 /usr/bin/python3 \
     && rm -rf /var/lib/apt/lists/*
+
 VOLUME /ftp
 VOLUME /data
 VOLUME /config
