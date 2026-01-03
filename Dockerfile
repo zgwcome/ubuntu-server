@@ -1,4 +1,8 @@
 FROM ubuntu:22.04
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 2. 设置期望的时区（可选，但推荐）
+ENV TZ=Asia/Shanghai
 
 LABEL Description="My private Ubuntu 22.04 server." 
 
@@ -21,6 +25,10 @@ RUN true \
     systemctl \
     python3.12 python3-pip \
     libcrypto++-dev zlib1g-dev
+
+RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone && \
+    dpkg-reconfigure -f noninteractive tzdata
 
 WORKDIR /app
 
