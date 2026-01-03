@@ -14,13 +14,12 @@ RUN true \
     g++ \
     make \
     db-util \
-    vsftpd \
     iproute2 \
     curl \
     rclone \
     cron \
     systemctl \
-    python3.12 python3-pip python3.12-distutils \
+    python3.12 python3-pip \
     libcrypto++-dev zlib1g-dev
 
 WORKDIR /app
