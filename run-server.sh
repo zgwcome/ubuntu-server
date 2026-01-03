@@ -1,5 +1,4 @@
 #!/bin/bash
-
 script_path="/config/run-server.sh"
 
 # 检查文件是否存在
