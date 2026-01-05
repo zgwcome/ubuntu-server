@@ -20,6 +20,8 @@ RUN true \
     rclone \
     cron \
     systemctl \
+    python3-pip \
+    python3-venv \
     libcrypto++-dev zlib1g-dev
 
 RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
