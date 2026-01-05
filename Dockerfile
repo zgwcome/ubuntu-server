@@ -1,16 +1,13 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # 2. 设置期望的时区（可选，但推荐）
 ENV TZ=Asia/Shanghai
 
-LABEL Description="My private Ubuntu 22.04 server." 
+LABEL Description="My private Ubuntu 24.04 server." 
 
 RUN true \
-    && apt-get -y update \
-    && apt-get install -y software-properties-common \
-    && add-apt-repository ppa:deadsnakes/ppa \
-    && apt-get -y update
+    && apt-get -y update 
 
 RUN true \
     && apt-get -y install \
@@ -23,7 +20,6 @@ RUN true \
     rclone \
     cron \
     systemctl \
-    python3.12 python3-pip \
     libcrypto++-dev zlib1g-dev
 
 RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
